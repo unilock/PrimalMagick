@@ -1,19 +1,32 @@
-name: Run Gradle on PRs
-on: pull_request
+name: build
+on: [pull_request, push]
 jobs:
-  gradle:
+  build:
     runs-on: "ubuntu-latest"
     timeout-minutes: 15
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-java@v1
-      with:
-        java-version: 8
-    - uses: actions/cache@v1
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
-    - run: 
-        ./gradlew build
+      - name: checkout repository
+        uses: actions/checkout@v3
+      - name: validate gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+      - name: setup jdk
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'microsoft'
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: setup cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: build
+        run: ./gradlew build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Artifacts
+          path: build/libs/primalmagick*.jar
