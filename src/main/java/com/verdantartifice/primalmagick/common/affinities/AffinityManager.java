@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,7 +32,6 @@ import com.verdantartifice.primalmagick.common.crafting.IHasManaCost;
 import com.verdantartifice.primalmagick.common.sources.Source;
 import com.verdantartifice.primalmagick.common.sources.SourceList;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -148,8 +149,8 @@ public class AffinityManager extends SimpleJsonResourceReloadListener {
     // In degenerate cases (400 mods! 30000 items!) takes 600ms or more to complete.
     private void deriveAffinities() {
 
-        Minecraft mc  = Minecraft.getInstance();
-        Level world = mc.level;
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        Level world = server.getLevel(Level.OVERWORLD);
 
         if (world == null) {
             LOGGER.atWarn().log("Unable to derive affinities - no world available");
