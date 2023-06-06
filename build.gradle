@@ -6,7 +6,7 @@ plugins {
     id 'com.palantir.git-version' version '3.0.0'
 }
 
-version = gitVersion()
+version = project.mod_version
 group = 'com.verdantartifice.primalmagick'
 archivesBaseName = 'primalmagick'
 
